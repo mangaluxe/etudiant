@@ -1,0 +1,25 @@
+<!-- Inclusion du header -->
+<div th:replace="~{fragments/header :: headerImports}"></div>
+
+
+    <div class="container">
+        <main>
+            <h1 class="center h1">Détail d'un étudiant</h1>
+
+            <div class="box">
+                <h1 class="box-title"><span th:text="${etudiant.getPrenom()}"></span> <span th:text="${etudiant.getNom()}"></span></h1>
+                <div class="box-padding">
+                    <p>Age : <span th:text="${etudiant.getAge()}"></span></p>
+                    <p>Email : <span th:text="${etudiant.getEmail()}"></span></p>
+
+                    <p class="right"><a th:href="@{/liste}">Retour à la liste</a></p>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+
+<!-- Inclusion du footer -->
+<div th:replace="~{fragments/footer :: footerImports}"></div>

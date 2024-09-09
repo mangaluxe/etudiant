@@ -1,0 +1,29 @@
+<!-- Inclusion du header -->
+<div th:replace="~{fragments/header :: headerImports}"></div>
+
+
+    <div class="container">
+        <main>
+            <h1 class="center h1">Résultat de recherche</h1>
+
+            <!-- S'il n'y a pas de résultat -->
+            <div th:if="${etudiant == null}">
+                <p>Aucun résultat trouvé</p>
+            </div>
+
+            <!-- Affiche des détails si un étudiant est trouvé -->
+            <div th:if="${etudiant != null}">
+                <p>Nom : <span th:text="${etudiant.getNom()}"></span></p>
+                <p>Prénom : <span th:text="${etudiant.getPrenom()}"></span></p>
+                <p>Age : <span th:text="${etudiant.getAge()}"></span></p>
+                <p>Email : <span th:text="${etudiant.getEmail()}"></span></p>
+            </div>
+
+            <a th:href="@{/liste}">Retour à la liste</a>
+
+        </main>
+    </div>
+
+
+<!-- Inclusion du footer -->
+<div th:replace="~{fragments/footer :: footerImports}"></div>

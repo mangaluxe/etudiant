@@ -1,0 +1,97 @@
+<!-- Pour faire include : -->
+<th:block th:fragment="headerImports">
+
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">Exercice Étudiant</title>
+    <link th:href="@{/assets/css/style.css}" rel="stylesheet">
+    <link rel="icon" th:href="@{/assets/img/favicon.svg}" type="image/svg+xml">
+</head>
+<body>
+
+    <header th:fragment="header" class="header">
+        <div class="header-top">
+            <ul class="px-2">
+                <!-- <li><a href="https://www.mangaluxe.com/forum/">Forum</a></li> -->
+                <!-- <li><a href="https://www.mangaluxe.com/chat/">Tchat</a></li> -->
+            </ul>
+            <ul class="px-2">
+                <li><a href="#" target="_blank" class="icon-f"></a></li>
+                <li><a href="#" target="_blank" class="icon-t"></a></li>
+                <li><a href="#" target="_blank" class="icon-i"></a></li>
+                <li><a href="#" target="_blank" class="icon-y"></a></li>
+            </ul>
+        </div>
+
+        <div class="header-nav">
+            <div class="header-nav-child1">
+                <div class="container-burger tablet" id="open_menuburger">
+                    <div class="container-burger-in">
+                        <div>
+                            <div class="bar1"></div>
+                            <div class="bar2"></div>
+                            <div class="bar3"></div>
+                        </div>
+                        <div>Menu</div>
+                    </div>
+                </div>
+                <a th:href="@{/}" class="logo"><img th:src="@{/assets/img/logo.png}" alt="Page d'accueil"></a>
+
+                <div id="my_overlay" class="my-overlay">
+                    <nav class="nav-icon">
+                        <ul class="ul-1">
+                            <li><a th:href="@{/liste}">Liste des étudiants</a></li>
+                            <li><a th:href="@{/inscription}">Inscription</a></li>
+                            <li class="dropdown">
+                                <div>
+                                    <span class="drop-a">Recherches</span>
+                                    <div class="open-submenu"></div>
+                                </div>
+                                <div class="dropdown-content">
+                                    <ul class="ul-2">
+                                        <li><a th:href="@{/recherche?nom=Bogard}">Recherche 1</a></li>
+                                        <li><a th:href="@{/recherche?nom=Mario}">Recherche 2</a></li>
+                                        <li><a th:href="@{/recherche?nom=XXX}">Recherche 3</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="header-nav-child2 nav-icon">
+                <a class="icon-search" id="search"></a>
+
+                <div class="search-container">
+                    <div class="search-content">
+                        <div class="search-header">
+                            <span class="close-search"></span>
+                            <div class="h4 mb-0">Recherche</div>
+                        </div>
+                        <form action="#" method="post" class="search">
+                            <input type="search" id="recherche" name="nom" placeholder="Recherche">
+                            <button type="submit" class="submit"><span class="icon-search"></span></button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Commentaire Thymeleaf pour l'espace utilisateur -->
+                <!--
+                <a href="javascript:void(0)" class="icon-user" id="profil-drop"><span class="txt">[[${pseudo}]]</span></a>
+                <div class="profil-dropdown">
+                    <div class="profil-dropdown-menu">
+                        <a href="javascript:void(0)" rel="nofollow"><span class="icon-user"></span>Espace Membre</a>
+                        <a href="javascript:void(0)" rel="nofollow"><span class="icon-profile"></span>Profil</a>
+                        <a href="javascript:void(0)" rel="nofollow"><span class="icon-envelop"></span>Messages Privés</a>
+                        <a th:href="@{/deconnexion}" rel="nofollow"><span class="icon-exit"></span>Déconnexion</a>
+                    </div>
+                </div>
+                <div class="profil-overlay"></div>
+                -->
+            </div>
+        </div>
+    </header>
+
+</th:block>
