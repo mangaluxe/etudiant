@@ -82,8 +82,8 @@ ul.a-arrow {
 }
 
 .no-margin-padding {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 ul.no-margin-padding {
     margin-left: 15px;
@@ -189,6 +189,25 @@ td {
 }
 
 /* ----- Grid ----- */
+
+.grid-box {
+    display: grid;
+    border-left: 1px solid var(--grey);
+    border-bottom: 1px solid var(--grey);
+    border-top: 1px solid var(--grey);
+    font-size: .9em;
+    overflow-x: auto; /* Ajout de scroll si nécessaire */
+
+    grid-template-columns: repeat(4, auto);
+}
+
+.grid-box > div {
+    border-right: 1px solid var(--grey);
+    padding: 2px 4px;
+}
+/*.grid-box > div:nth-child(-n+4) {*/
+/*    border-top: 1px solid var(--grey);*/
+/*}*/
 
 .grid-2-col,
 .grid-3-col,
@@ -589,7 +608,7 @@ main .form-control.form-invalid {
 }
 
 
-.header-nav .nav-icon > .icon-user {
+.header-nav .nav-icon .icon-user {
     background-color: var(--blue3);
     border-radius: 20px;
     display: flex;
@@ -597,7 +616,7 @@ main .form-control.form-invalid {
     margin-left: 5px;
     margin-right: 15px;
 }
-.header-nav .nav-icon > .icon-user:hover {
+.header-nav .nav-icon .icon-user:hover {
     background-color: #179BE1;
 }
 a .txt {

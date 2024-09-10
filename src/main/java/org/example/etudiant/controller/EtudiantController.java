@@ -6,18 +6,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 
 @Controller
 public class EtudiantController {
 
-    // ----- Propriétés -----
+    // ========== Propriétés ==========
 
     private final EtudiantService etudiantService; // Service pour gérer les opérations sur les étudiants
 
 
-    // ----- Constructeur -----
+    // ========== Constructeur ==========
 
     /**
      * Constructeur
@@ -28,13 +29,23 @@ public class EtudiantController {
     }
 
 
-    // ----- Méthodes avec routes -----
+    // ========== Méthodes ==========
+
+    /*
+    @RequestMapping : Pour gérer plusieurs types de requêtes HTTP (GET et POST).
+
+    @GetMapping : Uniquement requêtes GET.
+
+    @PostMapping : Uniquement requêtes POST.
+    */
+
 
     /**
      * Page d'Accueil
      * @return Nom de la vue pour la page d'accueil
      */
-    @RequestMapping("/") // URL : http://localhost:8080/
+//    @RequestMapping("/") // Marche aussi
+    @GetMapping("/") // URL : http://localhost:8080/
     public String home(Model model) {
         model.addAttribute("title", "Page d'Accueil - Gestion des étudiants"); // Pour le title de la page
         return "index"; // Renvoie le nom de la vue "index" pour la page d'accueil
@@ -46,7 +57,7 @@ public class EtudiantController {
      * @param model : Modèle pour ajouter des attributs à la vue
      * @return Nom de la vue pour afficher tous les étudiants
      */
-    @RequestMapping("/liste") // URL : http://localhost:8080/liste
+    @GetMapping("/liste") // URL : http://localhost:8080/liste
     public String liste(Model model) {
         model.addAttribute("etudiants", etudiantService.getEtudiants()); // Ajoute la liste des étudiants au modèle
         model.addAttribute("title", "Liste des étudiants"); // Pour le title de la page
@@ -60,18 +71,23 @@ public class EtudiantController {
      * @param model : Modèle pour ajouter des attributs à la vue
      * @return Nom de la vue pour afficher les détails d'un étudiant
      */
-    @RequestMapping("/detail/{id}") // URL exemple : http://localhost:8080/detail/1
+    @GetMapping("/detail/{id}") // URL exemple : http://localhost:8080/detail/1
     public String detailPage(@PathVariable("id") UUID id, Model model) {
         Etudiant etudiant = etudiantService.getEtudiantById(id); // Obtient l'étudiant avec l'identifiant spécifié
-        model.addAttribute("etudiant", etudiant); // Ajoute l'étudiant au modèle
-
-        // System.out.println(etudiant);
 
         if (etudiant != null) {
+            model.addAttribute("etudiant", etudiant); // Ajoute l'étudiant au modèle
+            // System.out.println(etudiant);
+
             model.addAttribute("title", "Détail de l'étudiant " + etudiant.getPrenom() + " " + etudiant.getNom()); // Title dynamique avec le prénom et nom de l'étudiant
+            return "detail"; // Renvoie le nom de la vue "detail" pour afficher les détails de l'étudiant
+        }
+        else {
+            model.addAttribute("errorMessage", "Cet étudiant n'existe pas");
+            model.addAttribute("title", "Erreur 404"); // Title dynamique avec le prénom et nom de l'étudiant
+            return "error404"; // Renvoie vers une page d'erreur 404. Provoque quand même une erreur si le format UUID n'est pas valide
         }
 
-        return "detail"; // Renvoie le nom de la vue "detail" pour afficher les détails de l'étudiant
     }
 
     /*
@@ -79,15 +95,22 @@ public class EtudiantController {
     */
 
 
-    @RequestMapping("/recherche") // URL : http://localhost:8080/recherche?nom=Bogard
-    public String rechercheEtudiant(@RequestParam("nom") String nom, Model model) {
-        Etudiant etudiant = etudiantService.getEtudiantByNom(nom);
+    // ----- Recherche -----
+
+    /**
+     * Rechercher étudiant par son nom
+     */
+    @GetMapping("/recherche") // URL : http://localhost:8080/recherche?nom=tom
+    public String recherche(@RequestParam("nom") String nom, Model model) {
+        List<Etudiant> etudiants = etudiantService.rechercheByNom(nom);
 
         model.addAttribute("nom", nom);
-        model.addAttribute("etudiant", etudiant);
+        model.addAttribute("etudiants", etudiants);
         model.addAttribute("title", "Recherche d'étudiants"); // Pour le title de la page
+
         return "recherche"; // Renvoie vers la page de résultat
     }
+
 
     /*
     @RequestParam : pour lier les paramètres de requête ou les données de formulaire à un argument de méthode dans un contrôleur.
@@ -96,23 +119,64 @@ public class EtudiantController {
 
     // ----- Formulaire -----
 
-    @RequestMapping("/formulaire") // URL : http://localhost:8080/formulaire
-    public String formulaire(Model model) {
+    /**
+     * Formulaire d'ajout d'étudiant
+     */
+    @GetMapping("/formulaire") // URL : http://localhost:8080/formulaire
+    public String formulaireAjout(Model model) {
         model.addAttribute("etudiant", new Etudiant());
         return "formulaire";
     }
 
-
-    @PostMapping("/envoi")
-    public String envoi(@ModelAttribute("etudiant") Etudiant etudiant) {
-        System.out.println(etudiant.getNom());
-        System.out.println(etudiant.getPrenom());
-        System.out.println(etudiant.getAge());
-        System.out.println(etudiant.getEmail());
+    /**
+     * Ajout d'étudiant
+     */
+    @PostMapping("/ajout") // Marche aussi: @RequestMapping(value = "/ajout", method = RequestMethod.POST)
+    public String ajout(@ModelAttribute("etudiant") Etudiant etudiant) {
+//        System.out.println(etudiant.getNom());
+//        System.out.println(etudiant.getPrenom());
+//        System.out.println(etudiant.getAge());
+//        System.out.println(etudiant.getEmail());
 
         etudiant.setId(UUID.randomUUID()); // Générer un UUID pour l'étudiant
 
-        etudiantService.ajouterEtudiant(etudiant); // Ajouter l'étudiant au service
+        etudiantService.ajouterOuModifierEtudiant(etudiant); // Ajouter l'étudiant au service
+
+        return "redirect:/liste"; // Redirection vers la liste des étudiants après ajout
+    }
+
+
+    /**
+     * Supprimer un étudiant
+     */
+    @GetMapping("/delete")
+    public String delete(@RequestParam("id") UUID id) {
+//        System.out.println("Logique de suppression ici");
+
+        etudiantService.supprimerEtudiant(id); // Supprime l'étudiant via le service
+
+        return "redirect:/liste";
+    }
+
+
+    /**
+     * Formulaire pour modifier un étudiant
+     */
+    @GetMapping("/update")
+    public String formulaireUpdate(@RequestParam("id") UUID id, Model model) {
+        Etudiant etudiant = etudiantService.getEtudiantById(id);
+        model.addAttribute("etudiant", etudiant);
+        model.addAttribute("action", "/update"); // Pour différencier ajout et update
+
+        return "formulaire"; // Même formulaire que pour ajout
+    }
+
+    /**
+     * Modifie un étudiant
+     */
+    @PostMapping("/update")
+    public String update(@ModelAttribute("etudiant") Etudiant etudiant) {
+        etudiantService.ajouterOuModifierEtudiant(etudiant); // Modifie l'étudiant existant
 
         return "redirect:/liste"; // Redirection vers la liste des étudiants après ajout
     }

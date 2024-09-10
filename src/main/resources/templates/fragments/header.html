@@ -4,6 +4,8 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${title}">Exercice Étudiant</title>
     <link th:href="@{/assets/css/style.css}" rel="stylesheet">
     <link rel="icon" th:href="@{/assets/img/favicon.svg}" type="image/svg+xml">
@@ -45,14 +47,13 @@
                             <li><a th:href="@{/formulaire}">Ajouter un étudiant</a></li>
                             <li class="dropdown">
                                 <div>
-                                    <span class="drop-a">Recherches</span>
+                                    <span class="drop-a">Autres</span>
                                     <div class="open-submenu"></div>
                                 </div>
                                 <div class="dropdown-content">
                                     <ul class="ul-2">
-                                        <li><a th:href="@{/recherche?nom=Bogard}">Recherche 1</a></li>
-                                        <li><a th:href="@{/recherche?nom=Mario}">Recherche 2</a></li>
-                                        <li><a th:href="@{/recherche?nom=XXX}">Recherche 3</a></li>
+                                        <li><a href="#">Autre 1</a></li>
+                                        <li><a href="#">Autre 2</a></li>
                                     </ul>
                                 </div>
                             </li>

@@ -6,24 +6,16 @@
         <main>
             <h1 class="h1 center">Liste des étudiants</h1>
 
-<!--            <ul th:if="${etudiants != null}">-->
-            <ul th:unless="${etudiants.isEmpty()}">
-                <li th:each="e : ${etudiants}">
-                    <span th:text="${(e.getPrenom())}"></span> <span th:text="${(e.getNom())}"></span> (<a th:href="@{/detail/{id}(id=${e.getId()})}">Voir détails</a>)
-                </li>
-            </ul>
+            <div th:unless="${etudiants.isEmpty()}">
 
-<!--            <div class="grid-3-col" th:if="${etudiants != null}">-->
-<!--                <div class="grid-cell head">Prénom</div>-->
-<!--                <div class="grid-cell head">Nom</div>-->
-<!--                <div class="grid-cell head">Info</div>-->
+                <div class="grid-box" th:each="e : ${etudiants}">
+                    <div><span th:text="${(e.getNom())}"></span> <span th:text="${(e.getPrenom())}"></span></div>
+                    <div><a th:href="@{/detail/{id}(id=${e.getId()})}">Voir détails</a></div>
+                    <div><a th:href="@{/update(id=${e.getId()})}">Modifier <span class="icon-pencil"></span></a></div>
+                    <div><a th:href="@{/delete(id=${e.getId()})}">Supprimer  <span class="icon-cross"></span></a></div>
+                </div>
 
-<!--                <div th:each="e : ${etudiants}">-->
-<!--                    <div class="grid-cell"><span th:text="${(e.getPrenom())}"></span></div>-->
-<!--                    <div class="grid-cell"><span th:text="${(e.getNom())}"></div>-->
-<!--                    <div class="grid-cell"><a th:href="@{/detail/{id}(id=${e.getId()})}">Voir détails</a></div>-->
-<!--                </div>-->
-<!--            </div>-->
+            </div>
 
             <div th:if="${etudiants.isEmpty()}">
                 <p>Aucun étudiant trouvé</p>

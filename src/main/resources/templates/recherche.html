@@ -2,27 +2,26 @@
 <div th:replace="~{fragments/header :: headerImports}"></div>
 
 
-    <div class="container">
-        <main>
-            <h1 class="center h1">Résultat de recherche</h1>
+<div class="container">
+    <main>
+        <h1 class="center h1" th:text="${title}">Recherche d'étudiants</h1>
 
-            <!-- S'il n'y a pas de résultat -->
-            <div th:if="${etudiant == null}">
-                <p>Aucun résultat trouvé</p>
-            </div>
+        <!-- <div th:if="${#lists.isEmpty(etudiants)}"> --> <!-- Marche aussi -->
+        <div th:if="${etudiants.size() == 0}">
+            <p>Aucun résultat trouvé pour : <span th:text="${nom}"></span></p>
+        </div>
 
-            <!-- Affiche des détails si un étudiant est trouvé -->
-            <div th:if="${etudiant != null}">
-                <p>Nom : <span th:text="${etudiant.getNom()}"></span></p>
-                <p>Prénom : <span th:text="${etudiant.getPrenom()}"></span></p>
-                <p>Age : <span th:text="${etudiant.getAge()}"></span></p>
-                <p>Email : <span th:text="${etudiant.getEmail()}"></span></p>
-            </div>
+        <!-- <div th:if="${!#lists.isEmpty(etudiants)}"> --> <!-- Marche aussi -->
+        <div th:if="${etudiants.size() > 0}">
+            <h2>Résultats de la recherche</h2>
+            <ul>
+                <li th:each="e : ${etudiants}"><a th:href="@{/detail/{id}(id=${e.getId()})}"><span th:text="${e.getPrenom()}"></span> <span th:text="${e.getNom()}"></span></a></li>
+            </ul>
+        </div>
 
-            <a th:href="@{/liste}">Retour à la liste</a>
-
-        </main>
-    </div>
+        <a th:href="@{/liste}">Retour à la liste</a>
+    </main>
+</div>
 
 
 <!-- Inclusion du footer -->

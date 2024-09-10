@@ -1,0 +1,17 @@
+<!-- Inclusion du header -->
+<div th:replace="~{fragments/header :: headerImports}"></div>
+
+
+<div class="container">
+    <main>
+        <h1 class="center h1">Erreur 404</h1>
+
+        <p th:text="${errorMessage}">Message d'erreur ici</p>
+
+        <a th:href="@{/liste}">Retour à la liste</a>
+    </main>
+</div>
+
+
+<!-- Inclusion du footer -->
+<div th:replace="~{fragments/footer :: footerImports}"></div>
