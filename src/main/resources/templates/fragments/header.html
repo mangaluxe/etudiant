@@ -70,8 +70,8 @@
                             <span class="close-search"></span>
                             <div class="h4 mb-0">Recherche</div>
                         </div>
-                        <form action="#" method="post" class="search">
-                            <input type="search" id="recherche" name="nom" placeholder="Recherche">
+                        <form action="#" th:action="@{/recherche?nom=}" th:object="${nom}" method="get" class="search">
+                            <input type="search" id="nom" name="nom" placeholder="Recherche">
                             <button type="submit" class="submit"><span class="icon-search"></span></button>
                         </form>
                     </div>

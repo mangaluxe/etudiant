@@ -68,6 +68,9 @@ public class EtudiantController {
         return "detail"; // Renvoie le nom de la vue "detail" pour afficher les détails de l'étudiant
     }
 
+    /*
+    @PathVariable : pour gérer les variables de modèle dans le mappage d’URI de la requête et les définir comme paramètres de méthode.
+    */
 
 
     /**
@@ -107,13 +110,17 @@ public class EtudiantController {
 
 
     @RequestMapping("/recherche") // URL : http://localhost:8080/recherche?nom=Bogard
-    public String rechercheEtudiant(@RequestParam(value = "nom", required = false) String nom, Model model) {
+    public String rechercheEtudiant(@RequestParam("nom") String nom, Model model) {
         Etudiant etudiant = etudiantService.getEtudiantByNom(nom);
 
+        model.addAttribute("nom", nom);
         model.addAttribute("etudiant", etudiant);
         model.addAttribute("title", "Recherche d'étudiants"); // Pour le title de la page
         return "recherche"; // Renvoie vers la page de résultat
     }
 
+    /*
+    @RequestParam : pour lier les paramètres de requête ou les données de formulaire à un argument de méthode dans un contrôleur.
+    */
 
 }
