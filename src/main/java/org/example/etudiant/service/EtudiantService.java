@@ -78,19 +78,16 @@ public class EtudiantService {
      * @return Etudiant
      */
     public Etudiant getEtudiantByNom(String nom) {
-        return etudiants.values().stream().filter(e -> e.getNom().equals(nom)).findFirst().orElse(null);
+        return etudiants.values().stream().filter(e -> e.getNom().contains(nom)).findFirst().orElse(null);
     }
 
 
     /**
      * Inscrire un nouvel étudiant
-     * @param etudiant
      */
     public void ajouterEtudiant(Etudiant etudiant) {
         etudiants.put(etudiant.getId(), etudiant);
-
     }
-
 
 
 }

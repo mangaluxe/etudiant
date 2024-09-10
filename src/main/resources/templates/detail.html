@@ -6,16 +6,19 @@
         <main>
             <h1 class="center h1">Détail d'un étudiant</h1>
 
-            <div class="box">
-                <h1 class="box-title"><span th:text="${etudiant.getPrenom()}"></span> <span th:text="${etudiant.getNom()}"></span></h1>
-                <div class="box-padding">
-                    <p>Age : <span th:text="${etudiant.getAge()}"></span></p>
-                    <p>Email : <span th:text="${etudiant.getEmail()}"></span></p>
+            <div th:if="${etudiant != null}">
+                <div class="box">
+                    <h1 class="box-title"><span th:text="${etudiant.getPrenom()}"></span> <span th:text="${etudiant.getNom()}"></span></h1>
+                    <div class="box-padding">
+                        <p>Age : <span th:text="${etudiant.getAge()}"></span></p>
+                        <p>Email : <span th:text="${etudiant.getEmail()}"></span></p>
 
-                    <p class="right"><a th:href="@{/liste}">Retour à la liste</a></p>
+                        <p class="right"><a th:href="@{/liste}">Retour à la liste</a></p>
+                    </div>
                 </div>
-
             </div>
+
+            <p th:if="${etudiant == null}">Cet étudiant n'existe pas</p>
 
         </main>
     </div>

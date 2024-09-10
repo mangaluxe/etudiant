@@ -6,7 +6,8 @@
         <main>
             <h1 class="h1 center">Liste des étudiants</h1>
 
-            <ul th:if="${etudiants != null}">
+<!--            <ul th:if="${etudiants != null}">-->
+            <ul th:unless="${etudiants.isEmpty()}">
                 <li th:each="e : ${etudiants}">
                     <span th:text="${(e.getPrenom())}"></span> <span th:text="${(e.getNom())}"></span> (<a th:href="@{/detail/{id}(id=${e.getId()})}">Voir détails</a>)
                 </li>
@@ -23,6 +24,10 @@
 <!--                    <div class="grid-cell"><a th:href="@{/detail/{id}(id=${e.getId()})}">Voir détails</a></div>-->
 <!--                </div>-->
 <!--            </div>-->
+
+            <div th:if="${etudiants.isEmpty()}">
+                <p>Aucun étudiant trouvé</p>
+            </div>
 
         </main>
     </div>

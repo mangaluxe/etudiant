@@ -60,53 +60,23 @@ public class EtudiantController {
      * @param model : Modèle pour ajouter des attributs à la vue
      * @return Nom de la vue pour afficher les détails d'un étudiant
      */
-    @RequestMapping("/detail/{etudiantId}") // URL exemple : http://localhost:8080/detail/1
-    public String detailPage(@PathVariable("etudiantId") UUID id, Model model) {
+    @RequestMapping("/detail/{id}") // URL exemple : http://localhost:8080/detail/1
+    public String detailPage(@PathVariable("id") UUID id, Model model) {
         Etudiant etudiant = etudiantService.getEtudiantById(id); // Obtient l'étudiant avec l'identifiant spécifié
         model.addAttribute("etudiant", etudiant); // Ajoute l'étudiant au modèle
-        model.addAttribute("title", "Détail de l'étudiant " + etudiant.getPrenom() + " " + etudiant.getNom()); // Title dynamique avec le prénom et nom de l'étudiant
+
+        // System.out.println(etudiant);
+
+        if (etudiant != null) {
+            model.addAttribute("title", "Détail de l'étudiant " + etudiant.getPrenom() + " " + etudiant.getNom()); // Title dynamique avec le prénom et nom de l'étudiant
+        }
+
         return "detail"; // Renvoie le nom de la vue "detail" pour afficher les détails de l'étudiant
     }
 
     /*
     @PathVariable : pour gérer les variables de modèle dans le mappage d’URI de la requête et les définir comme paramètres de méthode.
     */
-
-
-    /**
-     * Inscrire un nouvel étudiant
-     */
-    @GetMapping("/inscription") // URL : http://localhost:8080/inscription
-    public String form(Model model) {
-        model.addAttribute("etudiant", new Etudiant());
-        model.addAttribute("title", "Inscription"); // Pour le title de la page
-        return "inscription"; // Nom de la vue contenant le formulaire
-    }
-
-
-//    @PostMapping("/ajouter") // URL : http://localhost:8080/ajouter
-//    public String ajouterEtudiant(Etudiant etudiant) {
-//
-//    }
-
-
-    // Ajout manuel sans formulaire :
-    @GetMapping("/ajouter") // URL : http://localhost:8080/ajouter?nom=Toto&prenom=Tata&age=25&email=toto@email.com
-    public String ajouterEtudiant(@RequestParam("nom") String nom,
-                                  @RequestParam("prenom") String prenom,
-                                  @RequestParam("age") int age,
-                                  @RequestParam("email") String email) {
-        Etudiant etudiant = Etudiant.builder()
-                .id(UUID.randomUUID())
-                .nom(nom)
-                .prenom(prenom)
-                .age(age)
-                .email(email)
-                .build();
-        etudiantService.ajouterEtudiant(etudiant);
-
-        return "redirect:/liste"; // Redirection vers la liste des étudiants après ajout
-    }
 
 
     @RequestMapping("/recherche") // URL : http://localhost:8080/recherche?nom=Bogard
@@ -122,5 +92,30 @@ public class EtudiantController {
     /*
     @RequestParam : pour lier les paramètres de requête ou les données de formulaire à un argument de méthode dans un contrôleur.
     */
+
+
+    // ----- Formulaire -----
+
+    @RequestMapping("/formulaire") // URL : http://localhost:8080/formulaire
+    public String formulaire(Model model) {
+        model.addAttribute("etudiant", new Etudiant());
+        return "formulaire";
+    }
+
+
+    @PostMapping("/envoi")
+    public String envoi(@ModelAttribute("etudiant") Etudiant etudiant) {
+        System.out.println(etudiant.getNom());
+        System.out.println(etudiant.getPrenom());
+        System.out.println(etudiant.getAge());
+        System.out.println(etudiant.getEmail());
+
+        etudiant.setId(UUID.randomUUID()); // Générer un UUID pour l'étudiant
+
+        etudiantService.ajouterEtudiant(etudiant); // Ajouter l'étudiant au service
+
+        return "redirect:/liste"; // Redirection vers la liste des étudiants après ajout
+    }
+
 
 }
