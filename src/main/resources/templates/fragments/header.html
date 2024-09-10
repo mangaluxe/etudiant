@@ -77,19 +77,19 @@
                     </div>
                 </div>
 
-                <!-- Commentaire Thymeleaf pour l'espace utilisateur -->
-                <!--
-                <a href="javascript:void(0)" class="icon-user" id="profil-drop"><span class="txt">[[${pseudo}]]</span></a>
-                <div class="profil-dropdown">
-                    <div class="profil-dropdown-menu">
-                        <a href="javascript:void(0)" rel="nofollow"><span class="icon-user"></span>Espace Membre</a>
-                        <a href="javascript:void(0)" rel="nofollow"><span class="icon-profile"></span>Profil</a>
-                        <a href="javascript:void(0)" rel="nofollow"><span class="icon-envelop"></span>Messages Privés</a>
-                        <a th:href="@{/deconnexion}" rel="nofollow"><span class="icon-exit"></span>Déconnexion</a>
+                <div th:if="${logged == true}">
+                    <a href="javascript:void(0)" class="icon-user" id="profil-drop"><span class="txt">${pseudo}</span></a>
+                    <div class="profil-dropdown">
+                        <div class="profil-dropdown-menu">
+                            <a href="javascript:void(0)" rel="nofollow"><span class="icon-user"></span>Espace Membre</a>
+                            <a href="javascript:void(0)" rel="nofollow"><span class="icon-profile"></span>Profil</a>
+                            <a href="javascript:void(0)" rel="nofollow"><span class="icon-envelop"></span>Messages Privés</a>
+                            <a th:href="@{/deconnexion}" rel="nofollow"><span class="icon-exit"></span>Déconnexion</a>
+                        </div>
                     </div>
+                    <div class="profil-overlay"></div>
                 </div>
-                <div class="profil-overlay"></div>
-                -->
+
             </div>
         </div>
     </header>
