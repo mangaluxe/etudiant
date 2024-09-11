@@ -5,16 +5,17 @@
 <div class="container">
     <main>
         <h1 class="center h1" th:text="${etudiant.getId() != null} ? 'Modifier Étudiant' : 'Inscription'"></h1>
-<!--        <h1 class="center h1" th:text="${choixAction == 'update'} ? 'Modifier Étudiant' : 'Inscription'"></h1>-->
 
         <!-- Formulaire pour ajouter ou mettre à jour -->
         <form th:action="@{${etudiant.getId() != null} ? @{/update(id=${etudiant.getId()})} : '/ajout'}" th:object="${etudiant}" method="post">
-<!--        <form th:action="@{${choixAction == 'update'} ? @{/update(id=${etudiant.getId()})} : '/ajout'}" th:object="${etudiant}" method="post">-->
 
             <div>
                 <label for="nom">Nom :
                     <input type="text" th:field="*{nom}" id="nom" class="form-control">
                 </label>
+            </div>
+            <div th:if="${#fields.hasErrors('nom')}" class="i warning">
+                <p th:errors="*{nom}"></p>
             </div>
 
             <div>
@@ -22,11 +23,17 @@
                     <input type="text" th:field="*{prenom}" id="prenom" class="form-control">
                 </label>
             </div>
+            <div th:if="${#fields.hasErrors('prenom')}" class="i warning">
+                <p th:errors="*{prenom}"></p>
+            </div>
 
             <div>
                 <label for="age">Âge :
                     <input type="number" th:field="*{age}" id="age" class="form-control">
                 </label>
+            </div>
+            <div th:if="${#fields.hasErrors('age')}" class="i warning">
+                <p th:errors="*{age}"></p>
             </div>
 
             <div>
@@ -34,10 +41,11 @@
                     <input type="email" th:field="*{email}" id="email" class="form-control">
                 </label>
             </div>
+            <div th:if="${#fields.hasErrors('email')}" class="i warning">
+                <p th:errors="*{email}"></p>
+            </div>
 
-<!--            <button class="btn" th:text="${etudiant.getId() != null} ? 'Mettre à jour' : 'Ajouter'"></button>-->
-            <button class="btn" th:text="${choixAction == 'update'} ? 'Mettre à jour' : 'Ajouter'"></button>
-
+            <button class="btn" th:text="${etudiant.getId() != null} ? 'Mettre à jour' : 'Ajouter'"></button>
         </form>
     </main>
 </div>

@@ -113,6 +113,7 @@ public class EtudiantService {
      */
     public void supprimerEtudiant(UUID id) {
         etudiants.remove(id); // Supprime l'étudiant du Map grâce à l'UUID
+//        etudiants.removeIf(etudiant -> etudiant.getId().equals(id)); // Ne marche pas avec Map, mais List
     }
 
 

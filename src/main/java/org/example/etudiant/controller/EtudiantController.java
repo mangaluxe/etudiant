@@ -1,10 +1,14 @@
 package org.example.etudiant.controller;
 
+import jakarta.validation.Valid;
 import org.example.etudiant.model.Etudiant;
 import org.example.etudiant.service.EtudiantService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -75,19 +79,11 @@ public class EtudiantController {
     public String detailPage(@PathVariable("id") UUID id, Model model) {
         Etudiant etudiant = etudiantService.getEtudiantById(id); // Obtient l'étudiant avec l'identifiant spécifié
 
-        if (etudiant != null) {
-            model.addAttribute("etudiant", etudiant); // Ajoute l'étudiant au modèle
-            // System.out.println(etudiant);
+        model.addAttribute("etudiant", etudiant); // Ajoute l'étudiant au modèle
+        // System.out.println(etudiant);
 
-            model.addAttribute("title", "Détail de l'étudiant " + etudiant.getPrenom() + " " + etudiant.getNom()); // Title dynamique avec le prénom et nom de l'étudiant
-            return "detail"; // Renvoie le nom de la vue "detail" pour afficher les détails de l'étudiant
-        }
-        else {
-            model.addAttribute("errorMessage", "Cet étudiant n'existe pas");
-            model.addAttribute("title", "Erreur 404"); // Title dynamique avec le prénom et nom de l'étudiant
-            return "error404"; // Renvoie vers une page d'erreur 404. Provoque quand même une erreur si le format UUID n'est pas valide
-        }
-
+        model.addAttribute("title", "Détail de l'étudiant " + etudiant.getPrenom() + " " + etudiant.getNom()); // Title dynamique avec le prénom et nom de l'étudiant
+        return "detail"; // Renvoie le nom de la vue "detail" pour afficher les détails de l'étudiant
     }
 
     /*
@@ -132,17 +128,21 @@ public class EtudiantController {
      * Ajout d'étudiant
      */
     @PostMapping("/ajout") // Marche aussi: @RequestMapping(value = "/ajout", method = RequestMethod.POST)
-    public String ajout(@ModelAttribute("etudiant") Etudiant etudiant) {
+    public String ajout(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult, Model model) {
 //        System.out.println(etudiant.getNom());
 //        System.out.println(etudiant.getPrenom());
 //        System.out.println(etudiant.getAge());
 //        System.out.println(etudiant.getEmail());
 
+        if (bindingResult.hasErrors()) { // Vérification des erreurs de validation
+            return "formulaire"; // Si erreurs de validation, retour au formulaire
+        }
+
         etudiant.setId(UUID.randomUUID()); // Générer un UUID pour l'étudiant
 
         etudiantService.ajouterOuModifierEtudiant(etudiant); // Ajouter l'étudiant au service
 
-        return "redirect:/liste"; // Redirection vers la liste des étudiants après ajout
+        return "redirect:/liste"; // Redirection vers la liste après ajout
     }
 
 
@@ -175,11 +175,18 @@ public class EtudiantController {
      * Modifie un étudiant
      */
     @PostMapping("/update")
-    public String update(@ModelAttribute("etudiant") Etudiant etudiant) {
+    public String update(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { // Vérification des erreurs de validation
+            return "formulaire"; // Si erreurs de validation, retour au formulaire
+        }
+
         etudiantService.ajouterOuModifierEtudiant(etudiant); // Modifie l'étudiant existant
 
         return "redirect:/liste"; // Redirection vers la liste des étudiants après ajout
     }
 
+
+    // ----- -----
 
 }
