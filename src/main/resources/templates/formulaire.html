@@ -5,9 +5,11 @@
 <div class="container">
     <main>
         <h1 class="center h1" th:text="${etudiant.getId() != null} ? 'Modifier Étudiant' : 'Inscription'"></h1>
+<!--        <h1 class="center h1" th:text="${choixAction == 'update'} ? 'Modifier Étudiant' : 'Inscription'"></h1>-->
 
         <!-- Formulaire pour ajouter ou mettre à jour -->
-        <form th:action="@{${etudiant.getId() != null} ? '/update' : '/ajout'}" th:object="${etudiant}" method="post">
+        <form th:action="@{${etudiant.getId() != null} ? @{/update(id=${etudiant.getId()})} : '/ajout'}" th:object="${etudiant}" method="post">
+<!--        <form th:action="@{${choixAction == 'update'} ? @{/update(id=${etudiant.getId()})} : '/ajout'}" th:object="${etudiant}" method="post">-->
 
             <div>
                 <label for="nom">Nom :
@@ -33,7 +35,8 @@
                 </label>
             </div>
 
-            <button class="btn" th:text="${etudiant.getId() != null} ? 'Mettre à jour' : 'Envoyer'"></button>
+<!--            <button class="btn" th:text="${etudiant.getId() != null} ? 'Mettre à jour' : 'Ajouter'"></button>-->
+            <button class="btn" th:text="${choixAction == 'update'} ? 'Mettre à jour' : 'Ajouter'"></button>
 
         </form>
     </main>

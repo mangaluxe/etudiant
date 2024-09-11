@@ -166,7 +166,7 @@ public class EtudiantController {
     public String formulaireUpdate(@RequestParam("id") UUID id, Model model) {
         Etudiant etudiant = etudiantService.getEtudiantById(id);
         model.addAttribute("etudiant", etudiant);
-        model.addAttribute("action", "/update"); // Pour différencier ajout et update
+        model.addAttribute("choixAction", "update"); // Pour différencier ajout et update
 
         return "formulaire"; // Même formulaire que pour ajout
     }
