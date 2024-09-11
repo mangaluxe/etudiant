@@ -13,36 +13,36 @@
                 <label for="nom">Nom :
                     <input type="text" th:field="*{nom}" id="nom" class="form-control">
                 </label>
-            </div>
-            <div th:if="${#fields.hasErrors('nom')}" class="i warning">
-                <p th:errors="*{nom}"></p>
+                <div th:if="${#fields.hasErrors('nom')}" class="i warning">
+                    <p th:errors="*{nom}"></p>
+                </div>
             </div>
 
             <div>
                 <label for="prenom">Prénom :
                     <input type="text" th:field="*{prenom}" id="prenom" class="form-control">
                 </label>
-            </div>
-            <div th:if="${#fields.hasErrors('prenom')}" class="i warning">
-                <p th:errors="*{prenom}"></p>
+                <div th:if="${#fields.hasErrors('prenom')}" class="i warning">
+                    <p th:errors="*{prenom}"></p>
+                </div>
             </div>
 
             <div>
                 <label for="age">Âge :
                     <input type="number" th:field="*{age}" id="age" class="form-control">
                 </label>
-            </div>
-            <div th:if="${#fields.hasErrors('age')}" class="i warning">
-                <p th:errors="*{age}"></p>
+                <div th:if="${#fields.hasErrors('age')}" class="i warning">
+                    <p th:errors="*{age}"></p>
+                </div>
             </div>
 
             <div>
                 <label for="email">Email :
                     <input type="email" th:field="*{email}" id="email" class="form-control">
                 </label>
-            </div>
-            <div th:if="${#fields.hasErrors('email')}" class="i warning">
-                <p th:errors="*{email}"></p>
+                <div th:if="${#fields.hasErrors('email')}" class="i warning">
+                    <p th:errors="*{email}"></p>
+                </div>
             </div>
 
             <button class="btn" th:text="${etudiant.getId() != null} ? 'Mettre à jour' : 'Ajouter'"></button>

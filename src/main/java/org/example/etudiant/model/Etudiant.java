@@ -32,9 +32,10 @@ public class Etudiant {
     @NotNull(message = "Champ obligatoire")
     private int age;
 
-    @MyValid
+//    @MyValid
     @NotBlank(message = "Champ obligatoire")
     @NotNull
+    @Email(message = "Format d’email : exemple@email.com")
     private String email;
 
 }
