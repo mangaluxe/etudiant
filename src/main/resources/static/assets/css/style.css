@@ -308,6 +308,11 @@ iframe {
     height: auto;
 }
 
+.mini-img {
+    max-width: 200px;
+    height: auto;
+}
+
 /* ----- Formulaire ----- */
 
 .btn {

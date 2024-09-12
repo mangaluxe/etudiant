@@ -71,22 +71,12 @@ public class EtudiantService {
 
     // ----- Recherche -----
 
-//    /**
-//     * Recherche des étudiants par leur nom ou prenom
-//     */
-//    public List<Etudiant> findByNomOrPrenom(String nom, String prenom) {
-//        return etudiantRepository.findByNomOrPrenom(nom, prenom);
-//    }
-
-
     /**
      * Recherche des étudiants par leur nom ou prenom
      */
-    public List<Etudiant> searchByNomOuPrenom(String searchTerm) {
-        return etudiantRepository.findByNomContainingOrPrenomContaining(searchTerm, searchTerm);
+    public List<Etudiant> search(String searchTerm) {
+        return etudiantRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(searchTerm, searchTerm);
     }
-
-
 
 
 }

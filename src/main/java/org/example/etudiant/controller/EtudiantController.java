@@ -4,13 +4,21 @@ import jakarta.validation.Valid;
 import org.example.etudiant.dao.EtudiantRepository;
 import org.example.etudiant.entity.Etudiant;
 import org.example.etudiant.service.EtudiantService;
+import org.example.etudiant.service.LoginService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 
@@ -20,18 +28,20 @@ public class EtudiantController {
     // ========== Propriétés ==========
 
     private final EtudiantService etudiantService; // Service pour gérer les opérations sur les étudiants
-    private final EtudiantRepository etudiantRepository;
+    private final LoginService loginService;
+
+    private String location = "src/main/resources/static/assets/img/up/";
+
+
 
     // ========== Constructeur ==========
 
     /**
      * Constructeur
-     *
-     * @param etudiantService : Service utilisé pour obtenir et manipuler les données des étudiants
      */
-    public EtudiantController(EtudiantService etudiantService, EtudiantRepository etudiantRepository) {
+    public EtudiantController(EtudiantService etudiantService, LoginService loginService) {
         this.etudiantService = etudiantService;
-        this.etudiantRepository = etudiantRepository;
+        this.loginService = loginService;
     }
 
 
@@ -83,7 +93,7 @@ public class EtudiantController {
      * @return Nom de la vue pour afficher les détails d'un étudiant
      */
     @GetMapping("/detail/{id}") // URL exemple : http://localhost:8080/detail/1
-    public String detailEtudiant(@PathVariable("id") int id, Model model) {
+    public String detailEtudiant(@PathVariable("id") int id, Model model) { // @PathVariable : pour gérer les variables de modèle dans le mappage d’URI de la requête et les définir comme paramètres de méthode
         Etudiant etudiant = etudiantService.findById(id); // Obtient l'étudiant avec l'identifiant spécifié
 
         // System.out.println(etudiant);
@@ -97,10 +107,6 @@ public class EtudiantController {
         return "detail"; // Renvoie le nom de la vue "detail" pour afficher les détails de l'étudiant
     }
 
-    /*
-    @PathVariable : pour gérer les variables de modèle dans le mappage d’URI de la requête et les définir comme paramètres de méthode.
-    */
-
 
     // ----- Create -----
 
@@ -109,38 +115,62 @@ public class EtudiantController {
      */
     @GetMapping("/formulaire") // URL : http://localhost:8080/formulaire
     public String formulaireAjout(Model model) {
+
+        // ----- Protéger la page par login en session -----
+        if (!loginService.isLogged()) {
+            return "redirect:/login";
+        }
+        // ----- -----
+
         model.addAttribute("etudiant", new Etudiant());
         model.addAttribute("title", "Ajouter un étudiant"); // Pour le title de la page
         model.addAttribute("choixAction", "ajout"); // Pour différencier ajout et update
         return "formulaire";
     }
 
+
+
     /**
      * Ajout d'étudiant
      */
     @PostMapping("/ajout") // Marche aussi: @RequestMapping(value = "/ajout", method = RequestMethod.POST)
-    public String ajout(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult, Model model) { // Attention : mettre dans cet ordre : Etudiant, BindingResult, et Model à la fin, sinon bug
+    public String ajout(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult, @RequestParam(value = "image", required = false) MultipartFile image, Model model) throws IOException {
 
-        /* Mettre dans cet ordre :
-        @Valid @ModelAttribute("etudiant") Etudiant etudiant : Demande à Spring de lier les données soumises du formulaire à l'objet etudiant et de valider cet objet.
+        System.out.println("Image: " + image.getOriginalFilename());
 
-        BindingResult bindingResult : Stocke les résultats de la validation, y compris les erreurs.
-
-        Model model : Utilisé pour ajouter des attributs au modèle, qui peuvent ensuite être utilisés dans la vue (si nécessaire).
-        */
-
-//        System.out.println(etudiant.getNom());
+        System.out.println(etudiant.getNom());
 
         // --- Validation ---
-        if (bindingResult.hasErrors()) { // Vérification des erreurs de validation
-            return "formulaire"; // Si erreurs de validation, retour au formulaire
+//        if (bindingResult.hasErrors()) { // Vérification des erreurs de validation
+//            return "formulaire"; // Si erreurs de validation, retour au formulaire
+//        }
+        // --- ---
+
+        // --- Upload image ---
+        // Traitez l'image uniquement si elle est présente
+        if (image != null && !image.isEmpty()) {
+            String imageName = image.getOriginalFilename();
+            Path destinationFile = Paths.get(location).resolve(Paths.get(imageName)).normalize().toAbsolutePath();
+            Files.createDirectories(destinationFile.getParent());
+
+            try (InputStream inputStream = image.getInputStream()) {
+                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            etudiant.setImage(imageName); // Stocke uniquement le nom du fichier dans l'entité
+        }
+        else {
+            etudiant.setImage(null);
         }
         // --- ---
 
-        etudiantService.save(etudiant); // Ajouter l'étudiant via service
+        System.out.println(etudiant.getImage());
+
+        etudiantService.save(etudiant); // Sauvegarder l'étudiant dans BDD
 
         return "redirect:/liste"; // Redirection vers la liste après ajout
     }
+
 
 
     // ----- Update -----
@@ -162,13 +192,35 @@ public class EtudiantController {
      * Modifie un étudiant
      */
     @PostMapping("/update")
-    public String update(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult) {
+    public String update(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult, @RequestParam("image") MultipartFile image) throws IOException {
+
+        // ----- Protéger la page par login en session -----
+        if (!loginService.isLogged()) {
+            return "redirect:/login";
+        }
+        // ----- -----
 
         // --- Validation ---
-        if (bindingResult.hasErrors()) { // Vérification des erreurs de validation
-            return "formulaire"; // Si erreurs de validation, retour au formulaire
-        }
+//        if (bindingResult.hasErrors()) { // Vérification des erreurs de validation
+//            return "formulaire"; // Si erreurs de validation, retour au formulaire
+//        }
         // --- ---
+
+
+        // ----- Gestion du changement d'image (si une nouvelle image a été uploadée) -----
+        if (image != null && !image.isEmpty()) {
+            String imageName = image.getOriginalFilename();
+            Path destinationFile = Paths.get(location).resolve(Paths.get(imageName)).normalize().toAbsolutePath();
+            Files.createDirectories(destinationFile.getParent());
+            try (InputStream inputStream = image.getInputStream()) {
+                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            etudiant.setImage(imageName); // Enregistre le nom du fichier dans l'objet Etudiant
+        }
+        else {
+            System.out.println("Aucune image");
+        }
+        // ----- -----
 
         etudiantService.save(etudiant); // Modifie l'étudiant existant
 
@@ -201,14 +253,15 @@ public class EtudiantController {
     @GetMapping("/recherche") // URL : http://localhost:8080/recherche?nom=tom&prenom=nana
     public String recherche(@RequestParam("searchTerm") String searchTerm, Model model) { // @RequestParam : pour lier les paramètres de requête ou les données de formulaire à un argument de méthode dans un contrôleur.
 
-        List<Etudiant> etudiants = etudiantService.searchByNomOuPrenom(searchTerm);
+        List<Etudiant> etudiants = etudiantService.search(searchTerm);
+        model.addAttribute("etudiants", etudiants);
+
+//        model.addAttribute("etudiants", etudiantService.search(searchTerm)); // Marche aussi
 
         model.addAttribute("searchTerm", searchTerm);
-        model.addAttribute("etudiants", etudiants);
         model.addAttribute("title", "Recherche d'étudiants"); // Pour le title de la page
 
         return "recherche"; // Renvoie vers la page de résultat
-
     }
 
 

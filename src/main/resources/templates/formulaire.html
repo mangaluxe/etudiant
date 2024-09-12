@@ -6,8 +6,11 @@
     <main>
         <h1 class="center h1" th:text="${choixAction == 'update'} ? 'Modifier Étudiant' : 'Inscription'"></h1>
 
+<!--        <p>Valeur de l'ID : <span th:text="${etudiant.getId()}"></span></p>-->
+
         <!-- Formulaire pour ajouter ou mettre à jour -->
-        <form th:action="@{${choixAction == 'update'} ? @{/update(id=${etudiant.getId()})} : '/ajout'}" th:object="${etudiant}" method="post">
+        <form action="#" th:action="@{${choixAction == 'update'} ? @{/update(id=${etudiant.getId()})} : '/ajout'}" th:object="${etudiant}" enctype="multipart/form-data" method="post">
+<!--        <form th:action="@{/ajout}" th:object="${etudiant}" enctype="multipart/form-data" method="post">-->
 
             <div>
                 <label for="nom">Nom :
@@ -37,10 +40,19 @@
                 <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="i warning"></p>
             </div>
 
-            <button class="btn" th:text="${choixAction == 'update'} ? 'Mettre à jour' : 'Ajouter'"></button>
+            <div>
+                <label for="image">Image :
+                    <!-- Ne pas utiliser th:field ici, car image est un MultipartFile -->
+                    <input type="file" name="image" id="image" class="form-control">
+                </label>
+            </div>
+
+            <button class="btn">Valider</button>
         </form>
+
     </main>
 </div>
+
 
 
 <!-- Inclusion du footer -->
