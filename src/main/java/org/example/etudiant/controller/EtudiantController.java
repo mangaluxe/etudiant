@@ -1,7 +1,8 @@
 package org.example.etudiant.controller;
 
 import jakarta.validation.Valid;
-import org.example.etudiant.model.Etudiant;
+import org.example.etudiant.dao.EtudiantRepository;
+import org.example.etudiant.entity.Etudiant;
 import org.example.etudiant.service.EtudiantService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @Controller
@@ -20,16 +20,18 @@ public class EtudiantController {
     // ========== Propriétés ==========
 
     private final EtudiantService etudiantService; // Service pour gérer les opérations sur les étudiants
-
+    private final EtudiantRepository etudiantRepository;
 
     // ========== Constructeur ==========
 
     /**
      * Constructeur
+     *
      * @param etudiantService : Service utilisé pour obtenir et manipuler les données des étudiants
      */
-    public EtudiantController(EtudiantService etudiantService) {
+    public EtudiantController(EtudiantService etudiantService, EtudiantRepository etudiantRepository) {
         this.etudiantService = etudiantService;
+        this.etudiantRepository = etudiantRepository;
     }
 
 
@@ -44,8 +46,11 @@ public class EtudiantController {
     */
 
 
+    // ----- Read -----
+
     /**
      * Page d'Accueil
+     *
      * @return Nom de la vue pour la page d'accueil
      */
 //    @RequestMapping("/") // Marche aussi
@@ -58,12 +63,13 @@ public class EtudiantController {
 
     /**
      * Afficher tous les étudiants
+     *
      * @param model : Modèle pour ajouter des attributs à la vue
      * @return Nom de la vue pour afficher tous les étudiants
      */
     @GetMapping("/liste") // URL : http://localhost:8080/liste
     public String liste(Model model) {
-        model.addAttribute("etudiants", etudiantService.getEtudiants()); // Ajoute la liste des étudiants au modèle
+        model.addAttribute("etudiants", etudiantService.findAll());
         model.addAttribute("title", "Liste des étudiants"); // Pour le title de la page
         return "liste"; // Renvoie le nom de la vue "liste" pour afficher tous les étudiants
     }
@@ -71,16 +77,21 @@ public class EtudiantController {
 
     /**
      * Afficher les détails d'un étudiant
-     * @param id : Id de l'étudiant
+     *
+     * @param id    : Id de l'étudiant
      * @param model : Modèle pour ajouter des attributs à la vue
      * @return Nom de la vue pour afficher les détails d'un étudiant
      */
     @GetMapping("/detail/{id}") // URL exemple : http://localhost:8080/detail/1
-    public String detailPage(@PathVariable("id") UUID id, Model model) {
-        Etudiant etudiant = etudiantService.getEtudiantById(id); // Obtient l'étudiant avec l'identifiant spécifié
+    public String detailEtudiant(@PathVariable("id") int id, Model model) {
+        Etudiant etudiant = etudiantService.findById(id); // Obtient l'étudiant avec l'identifiant spécifié
+
+        // System.out.println(etudiant);
+        if (etudiant == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Étudiant non trouvé");
+        }
 
         model.addAttribute("etudiant", etudiant); // Ajoute l'étudiant au modèle
-        // System.out.println(etudiant);
 
         model.addAttribute("title", "Détail de l'étudiant " + etudiant.getPrenom() + " " + etudiant.getNom()); // Title dynamique avec le prénom et nom de l'étudiant
         return "detail"; // Renvoie le nom de la vue "detail" pour afficher les détails de l'étudiant
@@ -91,29 +102,7 @@ public class EtudiantController {
     */
 
 
-    // ----- Recherche -----
-
-    /**
-     * Rechercher étudiant par son nom
-     */
-    @GetMapping("/recherche") // URL : http://localhost:8080/recherche?nom=tom
-    public String recherche(@RequestParam("nom") String nom, Model model) {
-        List<Etudiant> etudiants = etudiantService.rechercheByNom(nom);
-
-        model.addAttribute("nom", nom);
-        model.addAttribute("etudiants", etudiants);
-        model.addAttribute("title", "Recherche d'étudiants"); // Pour le title de la page
-
-        return "recherche"; // Renvoie vers la page de résultat
-    }
-
-
-    /*
-    @RequestParam : pour lier les paramètres de requête ou les données de formulaire à un argument de méthode dans un contrôleur.
-    */
-
-
-    // ----- Formulaire -----
+    // ----- Create -----
 
     /**
      * Formulaire d'ajout d'étudiant
@@ -121,6 +110,8 @@ public class EtudiantController {
     @GetMapping("/formulaire") // URL : http://localhost:8080/formulaire
     public String formulaireAjout(Model model) {
         model.addAttribute("etudiant", new Etudiant());
+        model.addAttribute("title", "Ajouter un étudiant"); // Pour le title de la page
+        model.addAttribute("choixAction", "ajout"); // Pour différencier ajout et update
         return "formulaire";
     }
 
@@ -128,44 +119,40 @@ public class EtudiantController {
      * Ajout d'étudiant
      */
     @PostMapping("/ajout") // Marche aussi: @RequestMapping(value = "/ajout", method = RequestMethod.POST)
-    public String ajout(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult, Model model) {
-//        System.out.println(etudiant.getNom());
-//        System.out.println(etudiant.getPrenom());
-//        System.out.println(etudiant.getAge());
-//        System.out.println(etudiant.getEmail());
+    public String ajout(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult, Model model) { // Attention : mettre dans cet ordre : Etudiant, BindingResult, et Model à la fin, sinon bug
 
+        /* Mettre dans cet ordre :
+        @Valid @ModelAttribute("etudiant") Etudiant etudiant : Demande à Spring de lier les données soumises du formulaire à l'objet etudiant et de valider cet objet.
+
+        BindingResult bindingResult : Stocke les résultats de la validation, y compris les erreurs.
+
+        Model model : Utilisé pour ajouter des attributs au modèle, qui peuvent ensuite être utilisés dans la vue (si nécessaire).
+        */
+
+//        System.out.println(etudiant.getNom());
+
+        // --- Validation ---
         if (bindingResult.hasErrors()) { // Vérification des erreurs de validation
             return "formulaire"; // Si erreurs de validation, retour au formulaire
         }
+        // --- ---
 
-        etudiant.setId(UUID.randomUUID()); // Générer un UUID pour l'étudiant
-
-        etudiantService.ajouterOuModifierEtudiant(etudiant); // Ajouter l'étudiant au service
+        etudiantService.save(etudiant); // Ajouter l'étudiant via service
 
         return "redirect:/liste"; // Redirection vers la liste après ajout
     }
 
 
-    /**
-     * Supprimer un étudiant
-     */
-    @GetMapping("/delete")
-    public String delete(@RequestParam("id") UUID id) {
-//        System.out.println("Logique de suppression ici");
-
-        etudiantService.supprimerEtudiant(id); // Supprime l'étudiant via le service
-
-        return "redirect:/liste";
-    }
-
+    // ----- Update -----
 
     /**
      * Formulaire pour modifier un étudiant
      */
     @GetMapping("/update")
-    public String formulaireUpdate(@RequestParam("id") UUID id, Model model) {
-        Etudiant etudiant = etudiantService.getEtudiantById(id);
+    public String formulaireUpdate(@RequestParam("id") int id, Model model) { // @RequestParam : pour lier les paramètres de requête ou les données de formulaire à un argument de méthode dans un contrôleur.
+        Etudiant etudiant = etudiantService.findById(id);
         model.addAttribute("etudiant", etudiant);
+        model.addAttribute("title", "Modifier un étudiant"); // Pour le title de la page
         model.addAttribute("choixAction", "update"); // Pour différencier ajout et update
 
         return "formulaire"; // Même formulaire que pour ajout
@@ -177,16 +164,52 @@ public class EtudiantController {
     @PostMapping("/update")
     public String update(@Valid @ModelAttribute("etudiant") Etudiant etudiant, BindingResult bindingResult) {
 
+        // --- Validation ---
         if (bindingResult.hasErrors()) { // Vérification des erreurs de validation
             return "formulaire"; // Si erreurs de validation, retour au formulaire
         }
+        // --- ---
 
-        etudiantService.ajouterOuModifierEtudiant(etudiant); // Modifie l'étudiant existant
+        etudiantService.save(etudiant); // Modifie l'étudiant existant
 
         return "redirect:/liste"; // Redirection vers la liste des étudiants après ajout
     }
 
 
-    // ----- -----
+    // ----- Delete -----
+
+    /**
+     * Supprimer un étudiant
+     */
+    @GetMapping("/delete")
+    public String delete(@RequestParam("id") int id) {
+
+        Etudiant etudiant = etudiantService.findById(id);
+        if (etudiant != null) {
+            etudiantService.delete(etudiant);
+        }
+
+        return "redirect:/liste";
+    }
+
+
+    // ----- Recherche -----
+
+    /**
+     * Rechercher étudiant par son nom
+     */
+    @GetMapping("/recherche") // URL : http://localhost:8080/recherche?nom=tom&prenom=nana
+    public String recherche(@RequestParam("searchTerm") String searchTerm, Model model) { // @RequestParam : pour lier les paramètres de requête ou les données de formulaire à un argument de méthode dans un contrôleur.
+
+        List<Etudiant> etudiants = etudiantService.searchByNomOuPrenom(searchTerm);
+
+        model.addAttribute("searchTerm", searchTerm);
+        model.addAttribute("etudiants", etudiants);
+        model.addAttribute("title", "Recherche d'étudiants"); // Pour le title de la page
+
+        return "recherche"; // Renvoie vers la page de résultat
+
+    }
+
 
 }

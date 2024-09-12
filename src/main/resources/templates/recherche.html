@@ -4,22 +4,22 @@
 
 <div class="container">
     <main>
-        <h1 class="center h1" th:text="${title}">Recherche d'étudiants</h1>
+        <h1 th:text="'Résultats de la recherche pour : ' + ${searchTerm}"></h1>
 
-        <!-- <div th:if="${#lists.isEmpty(etudiants)}"> --> <!-- Marche aussi -->
-        <div th:if="${etudiants.size() == 0}">
-            <p>Aucun résultat trouvé pour : <span th:text="${nom}"></span></p>
-        </div>
-
-        <!-- <div th:if="${!#lists.isEmpty(etudiants)}"> --> <!-- Marche aussi -->
-        <div th:if="${etudiants.size() > 0}">
-            <h2>Résultats de la recherche</h2>
+        <div th:if="${etudiants != null && etudiants.size() > 0}">
             <ul>
-                <li th:each="e : ${etudiants}"><a th:href="@{/detail/{id}(id=${e.getId()})}"><span th:text="${e.getPrenom()}"></span> <span th:text="${e.getNom()}"></span></a></li>
+                <li th:each="etudiant : ${etudiants}">
+                    <a th:href="@{'/detail/' + ${etudiant.id}}">
+                        <span th:text="${etudiant.nom}"></span> <span th:text="${etudiant.prenom}"></span>
+                    </a>
+                </li>
             </ul>
         </div>
 
-        <a th:href="@{/liste}">Retour à la liste</a>
+        <div th:if="${etudiants == null || etudiants.size() == 0}">
+            <p>Aucun étudiant trouvé.</p>
+        </div>
+
     </main>
 </div>
 

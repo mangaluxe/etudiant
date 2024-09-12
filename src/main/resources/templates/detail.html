@@ -2,31 +2,31 @@
 <div th:replace="~{fragments/header :: headerImports}"></div>
 
 
-    <div class="container">
-        <main>
-            <h1 class="center h1">Détail d'un étudiant</h1>
+<div class="container">
+    <main>
+        <h1 class="center h1">Détail d'un étudiant</h1>
 
-            <div th:if="${etudiant != null}">
-                <div class="box">
-                    <h1 class="box-title"><span th:text="${etudiant.getPrenom()}"></span> <span th:text="${etudiant.getNom()}"></span></h1>
-                    <div class="box-padding">
-                        <p>Age : <span th:text="${etudiant.getAge()}"></span></p>
-                        <p>Email : <span th:text="${etudiant.getEmail()}"></span></p>
+        <div th:if="${etudiant != null}">
+            <div class="box">
+                <h1 class="box-title"><span th:text="${etudiant.getPrenom()}"></span> <span th:text="${etudiant.getNom()}"></span></h1>
+                <div class="box-padding">
+                    <p>Age : <span th:text="${etudiant.getAge()}"></span></p>
+                    <p>Email : <span th:text="${etudiant.getEmail()}"></span></p>
 
-                        <div class="mt-5">
-                            <a th:href="@{/update(id=${etudiant.getId()})}" class="mini-btn">Modifier</a>
-                            <a th:href="@{/delete(id=${etudiant.getId()})}" class="mini-btn">Supprimer</a>
-                        </div>
-
-                        <p class="right"><a th:href="@{/liste}" class="mini-btn">Retour à la liste</a></p>
+                    <div class="mt-5">
+                        <a th:href="@{/update(id=${etudiant.getId()})}" class="mini-btn">Modifier</a>
+                        <a th:href="@{/delete(id=${etudiant.getId()})}" class="mini-btn">Supprimer</a>
                     </div>
+
+                    <p class="right"><a th:href="@{/liste}" class="mini-btn">Retour à la liste</a></p>
                 </div>
             </div>
+        </div>
 
-            <p th:if="${etudiant == null}">Cet étudiant n'existe pas</p>
+        <p th:if="${etudiant == null}">Cet étudiant n'existe pas</p>
 
-        </main>
-    </div>
+    </main>
+</div>
 
 
 <!-- Inclusion du footer -->

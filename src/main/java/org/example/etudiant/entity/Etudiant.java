@@ -1,5 +1,9 @@
-package org.example.etudiant.model;
+package org.example.etudiant.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,34 +11,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.etudiant.validation.MyValid;
 
-import java.util.UUID;
-
 @Data // Annotation Lombok qui génère automatiquement les getters/setters, toString...
 @AllArgsConstructor // Annotation Lombok qui génère un constructeur avec tous les arguments.
 @NoArgsConstructor // Annotation Lombok qui génère un constructeur sans arguments.
 @Builder // Annotation Lombok qui permet de créer des instances de la classe via le modèle de construction
+@Entity // Indique que cette classe est une entité JPA (correspond à une table dans la base de données)
 public class Etudiant {
 
-//    private int id;
-    private UUID id; // Utilisation de UUID pour garantir que chaque identifiant est unique
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Indiquent que le champ id est la clé primaire et qu'il sera auto-généré par la base de données (génération automatique de l'ID)
+    private int id;
 
+    // @NotNull
     @NotBlank(message = "Champ obligatoire")
-    @NotNull
     private String nom;
 
     @NotBlank(message = "Champ obligatoire")
-    @NotNull
     @Size(min = 3, max = 100, message = "Entre 3 et 100 caractères")
     private String prenom;
 
     @Min(value = 16, message = "Mini 16 ans")
     @Max(value = 99, message = "Max 99 ans")
-    @NotNull(message = "Champ obligatoire")
     private int age;
 
-//    @MyValid
+    @MyValid(message = "Gros mots interdits") // Validation personnalisée
     @NotBlank(message = "Champ obligatoire")
-    @NotNull
     @Email(message = "Format d’email : exemple@email.com")
     private String email;
 

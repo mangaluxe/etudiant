@@ -3,24 +3,31 @@ package org.example.etudiant.validation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class MyValidConstraintValidator implements ConstraintValidator<MyValid, String> {
 
-    private String charContain;
+    private static final List<String> BAD_WORDS = Arrays.asList("connar", "pute", "fuck");
+
+//    @Override
+//    public void initialize(MyValid constraintAnnotation) {
+//        // Pas besoin d'initialiser
+//    }
 
     @Override
-    public void initialize(MyValid constraintAnnotation) {
-        charContain = constraintAnnotation.value();
-    }
-
-    @Override
-    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        boolean result = false;
-
-        if (s != null) {
-            result = s.contains(charContain);
+    public boolean isValid(String s, ConstraintValidatorContext context) {
+        if (s == null) {
+            return true; // Vous pouvez retourner false si vous voulez que null soit invalidé
         }
 
-        return result;
-    }
+        // Vérifier si le texte contient l'un des mots interdits
+        for (String badWord : BAD_WORDS) {
+            if (s.toLowerCase().contains(badWord)) {
+                return false; // Mots interdits trouvés
+            }
+        }
 
+        return true; // Pas de mots interdits trouvés
+    }
 }

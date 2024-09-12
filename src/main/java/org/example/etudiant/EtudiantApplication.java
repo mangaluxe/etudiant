@@ -11,3 +11,7 @@ public class EtudiantApplication {
     }
 
 }
+
+/*
+Ce fichier est exécuté quand on démarre l'application. La méthode main utilise la méthode SpringApplication.run() pour lancer l'application Spring Boot.
+*/
